@@ -1,12 +1,15 @@
-require 'lib/env'
 require 'yaml'
+require 'env'
+require 'user'
 
 module StripeReceipts
   class App < Sinatra::Base
+    use Rack::Session::Cookie,
+      key: 'rack.session',
+      expire_after: 60 * 60 * 24 * 365,
+      secret: '_session_key_asdkjaskkjsdczxcjkzxjkjksereoioiqpqpsanzxnzxczjkksdf'
 
     configure do
-      set :sessions, true
-
       set :api_key, ENV["STRIPE_API_KEY"]
       set :client_id, ENV["STRIPE_CLIENT_ID"]
       set :scope, {scope: 'read_only'}
@@ -17,8 +20,17 @@ module StripeReceipts
       })
     end
 
+    helpers do
+      def current_user
+        @current_user ||= User[session[:user_id]]
+      end
+    end
+
     get '/' do
-      "<a href='/authorize'>Authorize</a>"
+      <<-HTML
+      <a href='/authorize'>Authorize</a><br>
+      #{current_user.access_token|| "no user"}<br>
+      HTML
     end
 
     get '/authorize' do
@@ -26,13 +38,22 @@ module StripeReceipts
     end
 
     get '/oauth/callback' do
-      content_type 'text/plain'
-      resp = settings.client.auth_code.get_token(params[:code], {
+      token = settings.client.auth_code.get_token(params[:code], {
         params: settings.scope
-      })
+      }).token
 
-      token = resp.token
-      "token:#{token}"
+      user = User.create access_token: token
+      session[:user_id] = user.id
+
+      redirect '/'
+    end
+
+    post '/hook' do
+      File.open("./tmp/#{Time.now.iso8601}.json", 'w') do |f|
+        f.write request.body.read
+      end
+
+      "ok"
     end
   end
 end
