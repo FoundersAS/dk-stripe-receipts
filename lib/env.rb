@@ -21,5 +21,20 @@ module StripeReceipts
   end
 end
 
+
+Pony.options = {
+  from: 'nobody@founders.as',
+  via: :smtp,
+  via_options: {
+    :address   => "smtp.mandrillapp.com",
+    :port      => 587,
+    :enable_starttls_auto => true,
+    :user_name => ENV["MANDRILL_USER"],
+    :password  => ENV["MANDRILL_PASS"],
+    :authentication => 'login',
+    :domain => ENV["HOST"]
+  }
+}
+
 Sequel::Model.db = StripeReceipts.db
 

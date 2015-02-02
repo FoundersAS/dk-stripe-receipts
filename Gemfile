@@ -9,6 +9,7 @@ gem 'stripe'
 gem 'dotenv', group: [:development, :test]
 gem 'pg'
 gem 'sequel'
+gem 'pony'
 
 group :test do
   gem 'rspec'
