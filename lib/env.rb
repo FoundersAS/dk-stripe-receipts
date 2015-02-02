@@ -2,7 +2,7 @@ require 'pathname'
 
 module StripeReceipts
   def self.root
-    Pathname.new File.expand_path(File.dirname __FILE__)
+    Pathname.new File.join(File.expand_path(File.dirname __FILE__), '..')
   end
   def self.env
     (ENV["RACK_ENV"] || :development).to_sym

@@ -1,6 +1,7 @@
 require 'yaml'
 require 'env'
 require 'user'
+require 'receipt'
 
 module StripeReceipts
   class App < Sinatra::Base
@@ -51,6 +52,11 @@ module StripeReceipts
     end
 
     post '/hook' do
+      case params["type"]
+      when "charge.succeeded"
+        Receipt.new(params).send!
+      end
+
       "ok"
     end
   end

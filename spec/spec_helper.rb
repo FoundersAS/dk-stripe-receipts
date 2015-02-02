@@ -21,5 +21,10 @@ RSpec.configure do |config|
     end
   end
 
+  def mock_request
+    @mock_request ||= JSON.parse File.read(
+      StripeReceipts.root.join 'spec/fixtures/charge_succeeded.json')
+  end
+
 end
 

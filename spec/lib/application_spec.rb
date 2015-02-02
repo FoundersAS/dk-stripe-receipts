@@ -55,6 +55,17 @@ module StripeReceipts
       end
       it { should be_redirect }
     end
+
+    describe "POST /hook" do
+      subject { post '/hook', mock_request }
+      it { should be_ok }
+      it "should make an event and process it" do
+        receipt = double send!: true
+        expect(Receipt).to receive(:new) { receipt }
+        subject
+        expect(receipt).to have_received(:send!)
+      end
+    end
   end
 end
 
