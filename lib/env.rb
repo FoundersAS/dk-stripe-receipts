@@ -16,7 +16,8 @@ Dotenv.load unless StripeReceipts.env == :production
 
 module StripeReceipts
   def self.db
-    Sequel.connect ENV["DATABASE_URL"]
+    Sequel.connect ENV["DATABASE_URL"] ||
+      "postgres://localhost/stripe_receipts_#{StripeReceipts.env}"
   end
 end
 

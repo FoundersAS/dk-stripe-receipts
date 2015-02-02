@@ -10,3 +10,15 @@ gem 'dotenv', group: [:development, :test]
 gem 'pg'
 gem 'sequel'
 
+group :test do
+  gem 'rspec'
+  gem 'backtrace_shortener', require: nil
+  gem 'rack-test', require: nil
+  gem 'webmock', require: nil
+  gem 'database_cleaner', require: nil
+end
+
+group :test, :development do
+  gem 'pry'
+end
+

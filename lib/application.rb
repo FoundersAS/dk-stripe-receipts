@@ -10,6 +10,8 @@ module StripeReceipts
       secret: '_session_key_asdkjaskkjsdczxcjkzxjkjksereoioiqpqpsanzxnzxczjkksdf'
 
     configure do
+      enable :logging, :dump_errors, :raise_errors
+
       set :api_key, ENV["STRIPE_API_KEY"]
       set :client_id, ENV["STRIPE_CLIENT_ID"]
       set :scope, {scope: 'read_only'}
@@ -29,7 +31,7 @@ module StripeReceipts
     get '/' do
       <<-HTML
       <a href='/authorize'>Authorize</a><br>
-      #{current_user.access_token|| "no user"}<br>
+      #{current_user && current_user.access_token|| "no user"}<br>
       HTML
     end
 
@@ -42,17 +44,13 @@ module StripeReceipts
         params: settings.scope
       }).token
 
-      user = User.create access_token: token
+      user = User.create(access_token: token)
       session[:user_id] = user.id
 
       redirect '/'
     end
 
     post '/hook' do
-      File.open("./tmp/#{Time.now.iso8601}.json", 'w') do |f|
-        f.write request.body.read
-      end
-
       "ok"
     end
   end
