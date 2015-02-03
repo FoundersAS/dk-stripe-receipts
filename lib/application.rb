@@ -1,7 +1,7 @@
 require 'yaml'
-require 'env'
-require 'user'
-require 'receipt'
+require './lib/env'
+require './lib/user'
+require './lib/receipt'
 
 module StripeReceipts
   class App < Sinatra::Base
